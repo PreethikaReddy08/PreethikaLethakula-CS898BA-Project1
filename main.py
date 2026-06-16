@@ -53,11 +53,11 @@ for index, channel_name in enumerate(channel_names):
 # Convert results to a table
 statistics_df = pd.DataFrame(statistics_rows)
 
-# Print results
+
 print("\nImage Statistics by RGB Channel")
 print(statistics_df.to_string(index=False))
 
-# Save results to CSV
+
 csv_path = OUTPUT_DIR / "image_statistics.csv"
 statistics_df.to_csv(csv_path, index=False)
 
