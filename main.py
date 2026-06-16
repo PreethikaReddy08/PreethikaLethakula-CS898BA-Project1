@@ -179,3 +179,35 @@ for file_name in all_image_files:
         cv2.imwrite(str(OUTPUT_DIR / output_name), blurred)
 
 print("\nGaussian blur images saved successfully.")
+
+# -----------------------------
+# Part 3 - Create Random Subsets
+# -----------------------------
+
+import random
+import shutil
+
+SUBSET_DIR = Path("subsets")
+SUBSET_DIR.mkdir(exist_ok=True)
+
+all_images = list(OUTPUT_DIR.glob("*.png"))
+
+random.seed(42)
+random.shuffle(all_images)
+
+subset_size = 42
+
+for i in range(4):
+    subset_folder = SUBSET_DIR / f"subset_{i + 1}"
+    subset_folder.mkdir(exist_ok=True)
+
+    start_index = i * subset_size
+    end_index = start_index + subset_size
+
+    subset_images = all_images[start_index:end_index]
+
+    for image_path in subset_images:
+        destination = subset_folder / image_path.name
+        shutil.copy(image_path, destination)
+
+print("\nCreated 4 subsets with 42 images each.")
