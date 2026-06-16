@@ -117,7 +117,19 @@ base_image_files = [
     "07_hsv_equalized_rgb.png"
 ]
 
-for file_name in base_image_files:
+rotation_angles = [10, 20, 30, 40, 50, 60, 70]
+
+translations = [
+    (10, 5),
+    (20, 10),
+    (30, 15),
+    (40, 20),
+    (50, 25),
+    (60, 30),
+    (70, 35)
+]
+
+for index, file_name in enumerate(base_image_files):
     image_path = OUTPUT_DIR / file_name
     img = cv2.imread(str(image_path), cv2.IMREAD_UNCHANGED)
 
@@ -127,14 +139,17 @@ for file_name in base_image_files:
 
     height, width = img.shape[:2]
 
-    # Transformation 1: rotation
-    rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), 15, 1.0)
+    angle = rotation_angles[index]
+    tx, ty = translations[index]
+
+    # Transformation 1: unique rotation
+    rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
     rotated = cv2.warpAffine(img, rotation_matrix, (width, height))
-    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_rotation.png"), rotated)
+    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_rotation_{angle}deg.png"), rotated)
 
-    # Transformation 2: translation
-    translation_matrix = np.float32([[1, 0, 30], [0, 1, 20]])
+    # Transformation 2: unique translation
+    translation_matrix = np.float32([[1, 0, tx], [0, 1, ty]])
     translated = cv2.warpAffine(img, translation_matrix, (width, height))
-    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_translation.png"), translated)
+    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_translation_{tx}_{ty}.png"), translated)
 
-print("\nAffine transformation images saved successfully.")
+print("\nUnique affine transformation images saved successfully.")
