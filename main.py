@@ -62,3 +62,43 @@ csv_path = OUTPUT_DIR / "image_statistics.csv"
 statistics_df.to_csv(csv_path, index=False)
 
 print(f"\nStatistics saved to: {csv_path}")
+
+# -----------------------------
+# Part 2 - Image Conversions
+# -----------------------------
+
+# Save original image
+cv2.imwrite(str(OUTPUT_DIR / "01_original.png"), image_bgr)
+
+# Grayscale
+grayscale = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+cv2.imwrite(str(OUTPUT_DIR / "02_grayscale.png"), grayscale)
+
+# Binary image
+_, binary = cv2.threshold(grayscale, 80, 255, cv2.THRESH_BINARY)
+cv2.imwrite(str(OUTPUT_DIR / "03_binary.png"), binary)
+
+# HSV
+hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
+cv2.imwrite(str(OUTPUT_DIR / "04_hsv.png"), hsv)
+
+# LAB (CIELAB)
+lab = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2LAB)
+cv2.imwrite(str(OUTPUT_DIR / "05_lab.png"), lab)
+
+# HLS
+hls = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HLS)
+cv2.imwrite(str(OUTPUT_DIR / "06_hls.png"), hls)
+
+# Histogram Equalization on V channel
+hsv_equalized = hsv.copy()
+hsv_equalized[:, :, 2] = cv2.equalizeHist(hsv_equalized[:, :, 2])
+
+equalized_bgr = cv2.cvtColor(hsv_equalized, cv2.COLOR_HSV2BGR)
+
+cv2.imwrite(
+    str(OUTPUT_DIR / "07_hsv_equalized_rgb.png"),
+    equalized_bgr
+)
+
+print("\nColor conversion images saved successfully.")
