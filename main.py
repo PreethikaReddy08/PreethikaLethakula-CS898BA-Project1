@@ -153,3 +153,29 @@ for index, file_name in enumerate(base_image_files):
     cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_translation_{tx}_{ty}.png"), translated)
 
 print("\nUnique affine transformation images saved successfully.")
+
+# -----------------------------
+# Part 2 - Gaussian Blur
+# -----------------------------
+
+all_image_files = [
+    file.name for file in OUTPUT_DIR.glob("*.png")
+    if "gaussian" not in file.name
+]
+
+sigma_values = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
+
+for file_name in all_image_files:
+    image_path = OUTPUT_DIR / file_name
+    img = cv2.imread(str(image_path), cv2.IMREAD_UNCHANGED)
+
+    if img is None:
+        print(f"Could not load {file_name}")
+        continue
+
+    for sigma in sigma_values:
+        blurred = cv2.GaussianBlur(img, (0, 0), sigmaX=sigma)
+        output_name = f"{file_name[:-4]}_gaussian_sigma_{sigma}.png"
+        cv2.imwrite(str(OUTPUT_DIR / output_name), blurred)
+
+print("\nGaussian blur images saved successfully.")
