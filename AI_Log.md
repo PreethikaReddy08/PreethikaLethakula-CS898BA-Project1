@@ -61,3 +61,51 @@ Provided OpenCV code to apply unique rotation and translation values to each of 
 
 Change:
 Generated 14 affine transformed images with unique transformation parameters.
+
+Entry 5
+
+Date and Time: 06/16/2026 2:25 PM
+
+Prompt:
+I now have 21 images and need to apply Gaussian blur to each one using sigma values 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, and 3.5. Can you help me generate and save all blurred images?
+
+Tool:
+ChatGPT
+
+Response Synopsis:
+Provided code to loop through the 21 images, apply Gaussian blur with seven sigma values, and save each blurred output.
+
+Change:
+Generated Gaussian blurred images.
+
+Entry 6
+
+Date and Time: 06/16/2026 2:40 PM
+
+Prompt:
+I now have 168 processed images and need to randomly divide them into four equal subsets containing 42 images each. Can you help me organize them?
+
+Tool:
+ChatGPT
+
+Response Synopsis:
+Provided Python code to randomly shuffle the generated images and distribute them into four subset folders with equal numbers of images.
+
+Change:
+Created four image subsets containing 42 images each.
+
+Entry 7
+
+Date and Time: 06/16/2026 3:09 PM
+
+Prompt:
+I'm at the edge detection part of the assignment now. I selected one subset containing 42 images and need to compare different edge detection methods. What's a good way to apply Sobel, Laplacian, Canny, and Prewitt to all images and save the outputs?
+
+Tool:
+ChatGPT
+
+Response Synopsis:
+Suggested implementing four edge detection techniques and provided code to process the selected subset and save the resulting images.
+
+Change:
+Applied Sobel, Laplacian, Canny, and Prewitt edge detection to the selected subset and generated the required outputs.

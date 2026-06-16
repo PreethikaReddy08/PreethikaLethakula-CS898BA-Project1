@@ -211,3 +211,134 @@ for i in range(4):
         shutil.copy(image_path, destination)
 
 print("\nCreated 4 subsets with 42 images each.")
+
+# -----------------------------
+# Part 3 - Edge Detection
+# -----------------------------
+
+EDGE_OUTPUT_DIR = Path("edge_outputs")
+EDGE_OUTPUT_DIR.mkdir(exist_ok=True)
+
+SELECTED_SUBSET = Path("subsets/subset_1")
+
+def convert_to_gray(img):
+    if len(img.shape) == 2:
+        return img
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+def sobel_edge(img):
+    gray = convert_to_gray(img)
+    sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+    sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+    combined = cv2.magnitude(sobel_x, sobel_y)
+    return cv2.convertScaleAbs(combined)
+
+def laplacian_edge(img):
+    gray = convert_to_gray(img)
+    laplacian = cv2.Laplacian(gray, cv2.CV_64F)
+    return cv2.convertScaleAbs(laplacian)
+
+def canny_edge(img):
+    gray = convert_to_gray(img)
+    return cv2.Canny(gray, 50, 150)
+
+def prewitt_edge(img):
+    gray = convert_to_gray(img)
+
+    kernel_x = np.array([
+        [-1, 0, 1],
+        [-1, 0, 1],
+        [-1, 0, 1]
+    ])
+
+    kernel_y = np.array([
+        [1, 1, 1],
+        [0, 0, 0],
+        [-1, -1, -1]
+    ])
+
+    edge_x = cv2.filter2D(gray, -1, kernel_x)
+    edge_y = cv2.filter2D(gray, -1, kernel_y)
+
+    return cv2.addWeighted(edge_x, 0.5, edge_y, 0.5, 0)
+
+for image_path in SELECTED_SUBSET.glob("*.png"):
+    img = cv2.imread(str(image_path), cv2.IMREAD_UNCHANGED)
+
+    if img is None:
+        print(f"Could not load {image_path.name}")
+        continue
+
+    base_name = image_path.stem
+
+    cv2.imwrite(str(EDGE_OUTPUT_DIR / f"{base_name}_input.png"), img)
+    cv2.imwrite(str(EDGE_OUTPUT_DIR / f"{base_name}_sobel.png"), sobel_edge(img))
+    cv2.imwrite(str(EDGE_OUTPUT_DIR / f"{base_name}_laplacian.png"), laplacian_edge(img))
+    cv2.imwrite(str(EDGE_OUTPUT_DIR / f"{base_name}_canny.png"), canny_edge(img))
+    cv2.imwrite(str(EDGE_OUTPUT_DIR / f"{base_name}_prewitt.png"), prewitt_edge(img))
+
+print("\nEdge detection images saved successfully.")
+
+# -----------------------------
+# Create Comparison Plots
+# -----------------------------
+
+import matplotlib.pyplot as plt
+
+COMPARISON_PLOTS_DIR = Path("plots/comparison_plots")
+COMPARISON_PLOTS_DIR.mkdir(parents=True, exist_ok=True)
+
+input_files = sorted(EDGE_OUTPUT_DIR.glob("*_input.png"))
+
+for input_file in input_files:
+    base_name = input_file.stem.replace("_input", "")
+
+    sobel_file = EDGE_OUTPUT_DIR / f"{base_name}_sobel.png"
+    laplacian_file = EDGE_OUTPUT_DIR / f"{base_name}_laplacian.png"
+    canny_file = EDGE_OUTPUT_DIR / f"{base_name}_canny.png"
+    prewitt_file = EDGE_OUTPUT_DIR / f"{base_name}_prewitt.png"
+
+    input_img = cv2.imread(str(input_file))
+    sobel_img = cv2.imread(str(sobel_file), cv2.IMREAD_GRAYSCALE)
+    laplacian_img = cv2.imread(str(laplacian_file), cv2.IMREAD_GRAYSCALE)
+    canny_img = cv2.imread(str(canny_file), cv2.IMREAD_GRAYSCALE)
+    prewitt_img = cv2.imread(str(prewitt_file), cv2.IMREAD_GRAYSCALE)
+
+    fig = plt.figure(figsize=(12, 9))
+    fig.patch.set_facecolor("#1e1e1e")
+
+    plt.suptitle(
+        f"Pipeline Trajectory:\n{base_name}",
+        color="cyan",
+        fontsize=12
+    )
+
+    images = [
+        (sobel_img, "Sobel Edge", "gray", 2),
+        (laplacian_img, "Laplacian Edge", "gray", 4),
+        (input_img, "Input Image", None, 5),
+        (canny_img, "Canny Edge", "gray", 6),
+        (prewitt_img, "Prewitt Edge", "gray", 8),
+    ]
+
+    for img, title, cmap, position in images:
+        ax = plt.subplot(3, 3, position)
+        ax.set_facecolor("#1e1e1e")
+
+        if img is None:
+            ax.text(0.5, 0.5, "Image missing", color="white", ha="center")
+        elif cmap == "gray":
+            ax.imshow(img, cmap="gray")
+        else:
+            ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+        ax.set_title(title, color="white")
+        ax.axis("off")
+
+    plt.tight_layout()
+
+    plot_path = COMPARISON_PLOTS_DIR / f"{base_name}_comparison.png"
+    plt.savefig(plot_path, facecolor=fig.get_facecolor())
+    plt.close()
+
+print("\nCreated 42 comparison plots successfully.")
