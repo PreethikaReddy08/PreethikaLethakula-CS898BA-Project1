@@ -102,3 +102,39 @@ cv2.imwrite(
 )
 
 print("\nColor conversion images saved successfully.")
+
+# -----------------------------
+# Part 2 - Affine Transformations
+# -----------------------------
+
+base_image_files = [
+    "01_original.png",
+    "02_grayscale.png",
+    "03_binary.png",
+    "04_hsv.png",
+    "05_lab.png",
+    "06_hls.png",
+    "07_hsv_equalized_rgb.png"
+]
+
+for file_name in base_image_files:
+    image_path = OUTPUT_DIR / file_name
+    img = cv2.imread(str(image_path), cv2.IMREAD_UNCHANGED)
+
+    if img is None:
+        print(f"Could not load {file_name}")
+        continue
+
+    height, width = img.shape[:2]
+
+    # Transformation 1: rotation
+    rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), 15, 1.0)
+    rotated = cv2.warpAffine(img, rotation_matrix, (width, height))
+    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_rotation.png"), rotated)
+
+    # Transformation 2: translation
+    translation_matrix = np.float32([[1, 0, 30], [0, 1, 20]])
+    translated = cv2.warpAffine(img, translation_matrix, (width, height))
+    cv2.imwrite(str(OUTPUT_DIR / f"{file_name[:-4]}_affine_translation.png"), translated)
+
+print("\nAffine transformation images saved successfully.")
