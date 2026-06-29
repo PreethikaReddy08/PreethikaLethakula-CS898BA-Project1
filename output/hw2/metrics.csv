@@ -1,0 +1,5 @@
+Method,IoU_Jaccard_Index,Dice_Coefficient
+Otsu,0.0105,0.0209
+Adaptive,0.0000,0.0000
+K-Means K=3,0.0119,0.0235
+GrabCut,0.3925,0.5637
